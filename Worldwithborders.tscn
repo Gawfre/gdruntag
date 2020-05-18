@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://PlayerSeeker.tscn" type="PackedScene" id=1]
+[ext_resource path="res://PlayerHider.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Buildings.tscn" type="PackedScene" id=3]
+
+[node name="Root" type="Node"]
+
+[node name="PlayerSeeker" parent="." instance=ExtResource( 1 )]
+position = Vector2( 551.254, 304.479 )
+
+[node name="PlayerHider" parent="." groups=[
+"detectable",
+] instance=ExtResource( 2 )]
+position = Vector2( 681.435, 402.514 )
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D"]
+position = Vector2( -11.8001, -15.1333 )
+polygon = PoolVector2Array( 13, 17, 1038.07, 13.748, 1034.9, 75.6283, 49.5752, 70.8683, 47.9885, 565.91, 953.979, 588.124, 952.392, 77.2149, 1036.49, 75.6283, 1036.49, 615.097, 11.495, 611.924 )
+
+[node name="Buildings" parent="." instance=ExtResource( 3 )]
