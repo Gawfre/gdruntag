@@ -23,10 +23,10 @@ func _physics_process(_delta):
 	for node in get_tree().get_nodes_in_group('detectable'):
 		if pos.distance_to(node.pos) < DETECT_RADIUS:
 			# Find the angle to the node, using the dot product
-			var dot_product = direction.dot(node.direction)
-			#var angle_to_node = rad2deg(direction.angle_to(node.direction))
-			var angle_to_node = rad2deg(acos(dot_product))
-			if  angle_to_node < FOV/2:
+			#var dot_product = direction.dot(node.direction)
+			var angle_to_node = rad2deg(direction.angle_to(node.direction))
+			#var angle_to_node = rad2deg(acos(dot_product))
+			if  abs(angle_to_node) < FOV/2:
 				detect_count +=1
 			
 			#If it's within the Player's cone of vision, the object is detected
