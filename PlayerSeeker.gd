@@ -6,6 +6,14 @@ var angle = 0
 
 var direction = Vector2()
 var draw_color = GREEN
+var ACCELERATIONSEEKER = 1000
+var MAX_SPEEDSEEKER = 500
+
+
+func _init():
+	.ACCELERATION_set(ACCELERATIONSEEKER)
+
+
 
 # Drawing the FOV
 const RED = Color(1.0, 0, 0, 0.4)
