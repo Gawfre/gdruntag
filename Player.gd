@@ -1,8 +1,17 @@
 extends KinematicBody2D
 
 var MAX_SPEED = 500
-var ACCELERATION = 2000
+var ACCELERATION = 2000 setget ACCELERATION_set, ACCELERATION_get
 var motion = Vector2.ZERO
+
+func ACCELERATION_set(new_value):
+	ACCELERATION = new_value
+
+
+func ACCELERATION_get():
+	return ACCELERATION 
+
+
 
 func _physics_process(delta):
 	var axis = get_input_axis()
