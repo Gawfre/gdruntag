@@ -122,6 +122,9 @@ margin_top = -0.0780029
 margin_right = -0.0160217
 margin_bottom = -0.0370026
 text = "127.0.0.1"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="HostButton" type="Button" parent="Connection"]
 anchor_left = 0.779
