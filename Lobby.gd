@@ -48,7 +48,6 @@ func unregister_player(id):
 	gamestate.players.erase(id)
 	emit_signal("player_list_changed")
 
-#const SERVER_IP = "91.167.175.95"
 const SERVER_IP = "127.0.0.1"
 const SERVER_PORT = 22033
 const MAX_PLAYERS = 8

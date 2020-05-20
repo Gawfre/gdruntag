@@ -109,7 +109,7 @@ margin_right = 0.359993
 margin_bottom = 0.0589905
 text = "IP :"
 
-[node name="IPAdress" type="LineEdit" parent="Connection"]
+[node name="IPAddress" type="LineEdit" parent="Connection"]
 anchor_left = 0.093
 anchor_top = 0.574
 anchor_right = 0.732
@@ -119,6 +119,9 @@ margin_top = -0.0780029
 margin_right = -0.0160217
 margin_bottom = -0.0370026
 text = "127.0.0.1"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="HostButton" type="Button" parent="Connection"]
 anchor_left = 0.779
