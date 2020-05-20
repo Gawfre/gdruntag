@@ -21,6 +21,8 @@ texture = ExtResource( 1 )
 shape = SubResource( 1 )
 
 [node name="Camera2D" type="Camera2D" parent="."]
+drag_margin_h_enabled = true
+drag_margin_v_enabled = true
 
 [node name="Label" type="Label" parent="."]
 margin_left = -33.0
