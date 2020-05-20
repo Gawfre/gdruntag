@@ -65,12 +65,15 @@ func refresh_lobby():
 
 
 func _on_HostButton_pressed():
+	print("hostpressed")
 	var player_name = $Connection/Pseudo.text
 	gamestate.host_game(player_name)
 	refresh_lobby()
+	print(get_tree().get_network_peer())
 
 
 func _on_JoinButton_pressed():
+	print("joinpressed")
 	var ip = $Connection/IPAddress.text
 	var player_name = $Connection/Pseudo.text
 	gamestate.join_game(ip, player_name)
