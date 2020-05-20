@@ -48,7 +48,6 @@ func unregister_player(id):
 	gamestate.players.erase(id)
 	emit_signal("player_list_changed")
 
-#const SERVER_IP = "91.167.175.95"
 const SERVER_IP = "127.0.0.1"
 const SERVER_PORT = 22033
 const MAX_PLAYERS = 8
@@ -66,12 +65,15 @@ func refresh_lobby():
 
 
 func _on_HostButton_pressed():
+	print("hostpressed")
 	var player_name = $Connection/Pseudo.text
 	gamestate.host_game(player_name)
 	refresh_lobby()
+	print(get_tree().get_network_peer())
 
 
 func _on_JoinButton_pressed():
+	print("joinpressed")
 	var ip = $Connection/IPAddress.text
 	var player_name = $Connection/Pseudo.text
 	gamestate.join_game(ip, player_name)
