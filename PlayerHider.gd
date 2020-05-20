@@ -12,7 +12,8 @@ func _ready():
 func _init():
 	.ACCELERATION_set(ACCELERATIONHIDER)
 
-
+func set_player_name(new_name):
+	.set_player_name(new_name)
 	
 func _physics_process(_delta):
 	var Player = get_tree().get_root().get_node("./Root/PlayerSeeker")

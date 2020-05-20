@@ -2,61 +2,148 @@
 
 [ext_resource path="res://Lobby.gd" type="Script" id=1]
 
-[node name="Root" type="Node"]
-
-[node name="Lobby" type="Node" parent="."]
+[node name="Lobby" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 5.97079
+margin_top = 1.01343
+margin_right = 5.97083
+margin_bottom = 1.01343
 script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="LineEdit" type="LineEdit" parent="."]
-anchor_left = 0.25
-anchor_top = 0.373
-anchor_right = 0.758
-anchor_bottom = 0.747
+[node name="Players" type="Panel" parent="."]
+anchor_left = 0.331
+anchor_top = 0.159
+anchor_right = 0.663
+anchor_bottom = 0.59
+margin_left = 0.215759
+margin_top = -0.240219
+margin_right = 0.247742
+margin_bottom = 0.15976
+
+[node name="Label" type="Label" parent="Players"]
+anchor_left = 0.109
+anchor_top = 0.027
+anchor_right = 0.947
+anchor_bottom = 0.112
+margin_left = -0.0600014
+margin_top = 0.00699997
+margin_right = 0.019989
+margin_bottom = -0.00800133
+text = "En attente de joueurs..."
+
+[node name="StartButton" type="Button" parent="Players"]
+anchor_left = 0.153
+anchor_top = 0.834
+anchor_right = 0.871
+anchor_bottom = 0.942
+margin_left = -0.0200043
+margin_top = -0.00601196
+margin_right = -0.140015
+margin_bottom = 0.0219879
+text = "Lancer partie"
+
+[node name="List" type="ItemList" parent="Players"]
+anchor_left = 0.062
+anchor_top = 0.135
+anchor_right = 0.885
+anchor_bottom = 0.776
+margin_left = -0.10643
+margin_top = 0.0946312
+margin_right = 0.0735474
+margin_bottom = 0.0756226
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Connection" type="Panel" parent="."]
+anchor_left = 0.35
+anchor_top = 0.623
+anchor_right = 0.729
+anchor_bottom = 0.951
+margin_left = -0.400024
 margin_top = 0.199982
-margin_right = -0.192017
-margin_bottom = -0.200012
+margin_right = -0.496033
+margin_bottom = 0.399963
+
+[node name="PseudoLabel" type="Label" parent="Connection"]
+anchor_left = 0.09
+anchor_top = 0.081
+anchor_right = 0.385
+anchor_bottom = 0.239
+margin_left = -0.0800018
+margin_top = 0.0430002
+margin_right = -0.120003
+margin_bottom = -0.0830002
+text = "Pseudo :
+"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="."]
-anchor_left = 0.383
-anchor_top = 0.093
-anchor_right = 0.625
-anchor_bottom = 0.373
-margin_left = -0.192017
-margin_top = -7.8
-margin_bottom = 0.199982
+[node name="Pseudo" type="LineEdit" parent="Connection"]
+anchor_left = 0.112
+anchor_top = 0.198
+anchor_right = 0.75
+anchor_bottom = 0.35
+margin_left = -0.456001
+margin_top = -0.00600433
+margin_right = -3.05176e-05
+margin_bottom = 0.0499954
+text = "Test"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="HostButton" type="Button" parent="."]
-anchor_left = 0.047
-anchor_top = 0.16
-anchor_right = 0.406
-anchor_bottom = 0.293
-margin_left = -0.128002
-margin_top = -7.62939e-06
-margin_right = 0.256012
-margin_bottom = 0.199997
-text = "Host"
+[node name="IPLabel" type="Label" parent="Connection"]
+anchor_left = 0.09
+anchor_top = 0.5
+anchor_right = 0.22
+anchor_bottom = 0.553
+margin_left = -0.0800018
+margin_top = -3.5
+margin_right = 0.359993
+margin_bottom = 0.0589905
+text = "IP :"
+
+[node name="IPAdress" type="LineEdit" parent="Connection"]
+anchor_left = 0.093
+anchor_top = 0.574
+anchor_right = 0.732
+anchor_bottom = 0.721
+margin_left = -0.0839996
+margin_top = -0.0780029
+margin_right = -0.0160217
+margin_bottom = -0.0370026
+text = "127.0.0.1"
+
+[node name="HostButton" type="Button" parent="Connection"]
+anchor_left = 0.779
+anchor_top = 0.196
+anchor_right = 0.965
+anchor_bottom = 0.359
+margin_left = 0.0845337
+margin_top = 0.0416832
+margin_right = -0.0834656
+margin_bottom = -0.0693207
+text = "Héberger"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="JoinButton" type="Button" parent="."]
-anchor_left = 0.539
-anchor_top = 0.16
-anchor_right = 0.898
-anchor_bottom = 0.293
-margin_left = 0.0639648
-margin_top = -7.62939e-06
-margin_right = 0.447937
-margin_bottom = 0.199997
-text = "Join"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-[connection signal="pressed" from="HostButton" to="Lobby" method="_on_HostButton_pressed"]
-[connection signal="pressed" from="JoinButton" to="Lobby" method="_on_JoinButton_pressed"]
+[node name="JoinButton" type="Button" parent="Connection"]
+anchor_left = 0.765
+anchor_top = 0.563
+anchor_right = 0.961
+anchor_bottom = 0.711
+margin_left = 0.179993
+margin_top = 0.0889969
+margin_right = 0.131989
+margin_bottom = -0.0670013
+text = "Rejoindre"
+[connection signal="pressed" from="Players/StartButton" to="." method="_on_StartButton_pressed"]
+[connection signal="pressed" from="Connection/HostButton" to="." method="_on_HostButton_pressed"]
+[connection signal="pressed" from="Connection/JoinButton" to="." method="_on_JoinButton_pressed"]

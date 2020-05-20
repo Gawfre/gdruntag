@@ -13,7 +13,8 @@ var MAX_SPEEDSEEKER = 500
 func _init():
 	.ACCELERATION_set(ACCELERATIONSEEKER)
 
-
+func set_player_name(new_name):
+	.set_player_name(new_name)
 
 # Drawing the FOV
 const RED = Color(1.0, 0, 0, 0.4)

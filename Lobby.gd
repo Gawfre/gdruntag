@@ -1,14 +1,14 @@
-extends Node
+extends Control
 
 const PSEUDO = "Robin"
 const COLOR = Color("FF0000") #Color8(255, 0, 0)
 
 func _ready():
-	get_tree().connect("network_peer_connected", self, "_player_connected")
-	get_tree().connect("network_peer_disconnected", self, "_player_disconnected")
-	get_tree().connect("connected_to_server", self, "_connected_ok")
-	get_tree().connect("connection_failed", self, "_connected_fail")
-	get_tree().connect("server_disconnected", self, "_server_disconnected")
+	gamestate.connect("connection_failed", self, "_on_connection_failed")
+	gamestate.connect("connection_succeeded", self, "_on_connection_success")
+	gamestate.connect("player_list_changed", self, "refresh_lobby")
+	gamestate.connect("game_ended", self, "_on_game_ended")
+	gamestate.connect("game_error", self, "_on_game_error")
 	
 # dict that gives infos for each player, provided its ID
 var player_info = {}
@@ -37,23 +37,45 @@ remote func register_player(info):
 	var id = get_tree().get_rpc_sender_id()
 	# Store new player's info 
 	player_info[id] = info
+	emit_signal("player_list_changed")
 	print(player_info)
 	
 	#Update UI with new player name	
 	
 #Find a way to display names
 
+func unregister_player(id):
+	gamestate.players.erase(id)
+	emit_signal("player_list_changed")
+
+#const SERVER_IP = "91.167.175.95"
 const SERVER_IP = "127.0.0.1"
 const SERVER_PORT = 22033
 const MAX_PLAYERS = 8
 
+func refresh_lobby():
+	var players = gamestate.get_player_list()
+	players.sort()
+	$Players/List.clear()
+	$Players/List.add_item(gamestate.get_player_name() + " (You)")
+	for p in players:
+		$Players/List.add_item(p)
+
+	$Players/StartButton.disabled = not get_tree().is_network_server()
+
+
+
 func _on_HostButton_pressed():
-	var peer = NetworkedMultiplayerENet.new()
-	peer.create_server(SERVER_PORT, MAX_PLAYERS)
-	get_tree().network_peer = peer
+	var player_name = $Connection/Pseudo.text
+	gamestate.host_game(player_name)
+	refresh_lobby()
 
 
 func _on_JoinButton_pressed():
-	var peer = NetworkedMultiplayerENet.new()
-	peer.create_client(SERVER_IP, SERVER_PORT)
-	get_tree().network_peer = peer
+	var ip = $Connection/IPAddress.text
+	var player_name = $Connection/Pseudo.text
+	gamestate.join_game(ip, player_name)
+
+
+func _on_StartButton_pressed():
+	gamestate.begin_game()

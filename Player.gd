@@ -11,7 +11,8 @@ func ACCELERATION_set(new_value):
 func ACCELERATION_get():
 	return ACCELERATION 
 
-
+func set_player_name(new_name):
+	get_node("Label").set_text(new_name)
 
 func _physics_process(delta):
 	var axis = get_input_axis()

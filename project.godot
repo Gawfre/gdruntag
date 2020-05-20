@@ -16,8 +16,12 @@ _global_script_class_icons={
 [application]
 
 config/name="gdruntag"
-run/main_scene="res://World.tscn"
+run/main_scene="res://NetworkingTest.tscn"
 config/icon="res://icon.png"
+
+[autoload]
+
+gamestate="*res://gamestate.gd"
 
 [rendering]
 
