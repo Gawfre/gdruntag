@@ -3,6 +3,7 @@ extends "res://Player.gd"
 const DETECT_RADIUS = 200
 const FOV = 80
 var angle = 0
+var lmousespeed = Vector2.ZERO
 
 var direction = Vector2()
 var draw_color = GREEN
@@ -25,8 +26,18 @@ func _ready():
 	
 func _physics_process(_delta):
 	var pos = position
-	direction = (get_global_mouse_position() - pos).normalized()
-	angle = 90 - rad2deg(direction.angle())
+	if lmousespeed != get_viewport().get_mouse_position():
+		lmousespeed = get_viewport().get_mouse_position()
+		direction = Vector2(get_local_mouse_position().y, get_local_mouse_position().x).normalized()#(get_global_mouse_position() - pos).normalized()
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	#print("Stand", get_local_mouse_position())
+	#print("Norm", get_local_mouse_position().normalized())
+	var dirjoy = Vector2(Input.get_joy_axis(0, JOY_AXIS_3), Input.get_joy_axis(0,JOY_AXIS_2))
+	#print(dirjoy)
+	if (dirjoy.x > 0.2 or dirjoy.x < -0.2) or (dirjoy.y > 0.2 or dirjoy.y < -0.2): #https://godotengine.org/article/handling-axis-godot
+		direction = dirjoy.normalized()
+		Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+	angle = rad2deg(direction.angle())
 	
 	var detect_count = 0
 	for node in get_tree().get_nodes_in_group('detectable'):
