@@ -3,13 +3,15 @@ extends "res://Player.gd"
 const DETECT_RADIUS = 200
 const FOV = 80
 var angle = 0
-var lmousespeed = Vector2.ZERO
+var prevmousepos = Vector2.ZERO
 
 var direction = Vector2()
 var draw_color = GREEN
 var ACCELERATIONSEEKER = 1000
 var MAX_SPEEDSEEKER = 500
 
+puppet var puppet_direction = Vector2()
+puppet var puppet_angle = 0
 
 func _init():
 	.ACCELERATION_set(ACCELERATIONSEEKER)
@@ -25,38 +27,48 @@ func _ready():
 	set_physics_process(true)
 	
 func _physics_process(_delta):
-	var pos = position
-	if lmousespeed != get_viewport().get_mouse_position():
-		lmousespeed = get_viewport().get_mouse_position()
-		direction = Vector2(get_local_mouse_position().y, get_local_mouse_position().x).normalized()#(get_global_mouse_position() - pos).normalized()
-		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	#print("Stand", get_local_mouse_position())
-	#print("Norm", get_local_mouse_position().normalized())
-	var dirjoy = Vector2(Input.get_joy_axis(0, JOY_AXIS_3), Input.get_joy_axis(0,JOY_AXIS_2))
-	#print(dirjoy)
-	if (dirjoy.x > 0.2 or dirjoy.x < -0.2) or (dirjoy.y > 0.2 or dirjoy.y < -0.2): #https://godotengine.org/article/handling-axis-godot
-		direction = dirjoy.normalized()
-		Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
-	angle = rad2deg(direction.angle())
+	if is_network_master():
+		var pos = position
+
+		if prevmousepos != get_viewport().get_mouse_position():
+			prevmousepos = get_viewport().get_mouse_position()
+			direction = Vector2(get_local_mouse_position().y, get_local_mouse_position().x).normalized()#(get_global_mouse_position() - pos).normalized()
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		
+		var dirjoy = Vector2(Input.get_joy_axis(0, JOY_AXIS_3), Input.get_joy_axis(0,JOY_AXIS_2))
+		if (dirjoy.x > 0.2 or dirjoy.x < -0.2) or (dirjoy.y > 0.2 or dirjoy.y < -0.2):
+			direction = dirjoy.normalized()
+			Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+		
+		angle = rad2deg(direction.angle()) # Thx to black magic we get the angle we want by inverting x and y value in V2 variable direction
+
+		var detect_count = 0
+		for node in get_tree().get_nodes_in_group('detectable'):
+			if pos.distance_to(node.pos) < DETECT_RADIUS:
+				# Find the angle to the node, using the dot product
+				#var dot_product = direction.dot(node.direction)
+				var angle_to_node = rad2deg(direction.angle_to(node.direction))
+				#var angle_to_node = rad2deg(acos(dot_product))
+				if  abs(angle_to_node) < FOV/2:
+					detect_count +=1
+				
+				#If it's within the Player's cone of vision, the object is detected
 	
-	var detect_count = 0
-	for node in get_tree().get_nodes_in_group('detectable'):
-		if pos.distance_to(node.pos) < DETECT_RADIUS:
-			# Find the angle to the node, using the dot product
-			#var dot_product = direction.dot(node.direction)
-			var angle_to_node = rad2deg(direction.angle_to(node.direction))
-			#var angle_to_node = rad2deg(acos(dot_product))
-			if  abs(angle_to_node) < FOV/2:
-				detect_count +=1
-			
-			#If it's within the Player's cone of vision, the object is detected
-			
-	# DRAWING
-	if detect_count >0:
-		draw_color = RED
+		# DRAWING
+		if detect_count >0:
+			draw_color = RED
+		else:
+			draw_color = GREEN
+		update()
+		rset_unreliable("puppet_direction", direction)
+		rset_unreliable("puppet_angle", angle)
 	else:
-		draw_color = GREEN
-	update()
+		direction = puppet_direction
+		angle = puppet_angle
+	if not is_network_master():
+		direction = puppet_direction
+		angle = puppet_angle
+		update()
 
 func _draw():
 	draw_circle_arc_poly(Vector2(), DETECT_RADIUS,  angle - FOV/2, angle + FOV/2, draw_color)
