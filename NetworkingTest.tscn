@@ -36,15 +36,29 @@ margin_bottom = -0.00800133
 text = "En attente de joueurs..."
 
 [node name="StartButton" type="Button" parent="Players"]
-anchor_left = 0.153
-anchor_top = 0.834
-anchor_right = 0.871
+anchor_left = 0.138
+anchor_top = 0.833
+anchor_right = 0.476
 anchor_bottom = 0.942
-margin_left = -0.0200043
-margin_top = -0.00601196
-margin_right = -0.140015
-margin_bottom = 0.0219879
+margin_left = -0.0505524
+margin_top = 0.0798187
+margin_right = 0.0294495
+margin_bottom = -0.151154
 text = "Lancer partie"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ChangeRole" type="Button" parent="Players"]
+anchor_left = 0.514
+anchor_top = 0.833
+anchor_right = 0.853
+anchor_bottom = 0.941
+margin_left = 0.109467
+margin_top = 0.0798187
+margin_right = -0.150543
+margin_bottom = 0.107834
+text = "Changer rôle"
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -154,5 +168,6 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 [connection signal="pressed" from="Players/StartButton" to="." method="_on_StartButton_pressed"]
+[connection signal="pressed" from="Players/ChangeRole" to="." method="_on_ChangeRole_pressed"]
 [connection signal="pressed" from="Connection/HostButton" to="." method="_on_HostButton_pressed"]
 [connection signal="pressed" from="Connection/JoinButton" to="." method="_on_JoinButton_pressed"]

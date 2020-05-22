@@ -12,6 +12,7 @@ var MAX_SPEEDSEEKER = 500
 
 puppet var puppet_direction = Vector2()
 puppet var puppet_angle = 0
+puppet var puppet_color = draw_color
 
 func _init():
 	.ACCELERATION_set(ACCELERATIONSEEKER)
@@ -27,6 +28,7 @@ func _ready():
 	set_physics_process(true)
 	
 func _physics_process(_delta):
+	print(get_local_mouse_position())
 	if is_network_master():
 		var pos = position
 
@@ -40,14 +42,14 @@ func _physics_process(_delta):
 			direction = dirjoy.normalized()
 			Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 		
-		angle = rad2deg(direction.angle()) # Thx to black magic we get the angle we want by inverting x and y value in V2 variable direction
-
+		angle = 90 - rad2deg(direction.angle()) # Thx to black magic we get the angle we want by inverting x and y value in V2 variable direction
+		
 		var detect_count = 0
 		for node in get_tree().get_nodes_in_group('detectable'):
-			if pos.distance_to(node.pos) < DETECT_RADIUS:
+			if pos.distance_to(node.position) < DETECT_RADIUS:
 				# Find the angle to the node, using the dot product
 				#var dot_product = direction.dot(node.direction)
-				var angle_to_node = rad2deg(direction.angle_to(node.direction))
+				var angle_to_node = rad2deg(Vector2(direction.y,direction.x).angle_to( (node.position - position).normalized() ))
 				#var angle_to_node = rad2deg(acos(dot_product))
 				if  abs(angle_to_node) < FOV/2:
 					detect_count +=1
@@ -60,14 +62,17 @@ func _physics_process(_delta):
 		else:
 			draw_color = GREEN
 		update()
-		rset_unreliable("puppet_direction", direction)
+		#rset_unreliable("puppet_direction", direction)
 		rset_unreliable("puppet_angle", angle)
+		rset_unreliable("puppet_color", draw_color)
 	else:
-		direction = puppet_direction
+		#direction = puppet_direction
 		angle = puppet_angle
+		draw_color = puppet_color
 	if not is_network_master():
-		direction = puppet_direction
+		#direction = puppet_direction
 		angle = puppet_angle
+		draw_color = puppet_color
 		update()
 
 func _draw():
@@ -82,6 +87,6 @@ func draw_circle_arc_poly(center, radius, angle_from, angle_to, color):
 	var colors = [color]
 
 	for i in range(nb_points+1):
-		var angle_point = -angle_from + i*(angle_to-angle_from)/nb_points
+		var angle_point = angle_from + i*(angle_to-angle_from)/nb_points
 		points_arc.push_back(center + Vector2( cos( deg2rad(angle_point) ), sin( deg2rad(angle_point) ) ) * radius)
 	draw_polygon(points_arc, colors)

@@ -56,9 +56,9 @@ func refresh_lobby():
 	var players = gamestate.get_player_list()
 	players.sort()
 	$Players/List.clear()
-	$Players/List.add_item(gamestate.get_player_name() + " (You)")
+	$Players/List.add_item(gamestate.get_player_name() + " [" + gamestate.get_player_role() + "] (You)")
 	for p in players:
-		$Players/List.add_item(p)
+		$Players/List.add_item(p + " [" + gamestate.get_player_role_from_pname(p) + "]")
 
 	$Players/StartButton.disabled = not get_tree().is_network_server()
 
@@ -81,3 +81,8 @@ func _on_JoinButton_pressed():
 
 func _on_StartButton_pressed():
 	gamestate.begin_game()
+
+
+func _on_ChangeRole_pressed():
+	gamestate.toggle_prole()
+	print("toggled_role: ", gamestate.get_player_role())

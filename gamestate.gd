@@ -6,12 +6,29 @@ const DEFAULT_PORT = 10567
 # Max number of players.
 const MAX_PEERS = 12
 
+# Define roles
+const SEEKER = "seeker"
+const HIDER = "hider"
+
+# Default role when connecting
+const DEFAULT_ROLE = SEEKER
+#const OTHER_ROLE = HIDER
+
+# Files' const, allow to easily change them instead of searching and changing each issue/entry
+const SEEKER_OBJ = "res://PlayerSeeker.tscn"
+const HIDER_OBJ = "res://PlayerHider.tscn"
+const MAP_OBJ = "res://World.tscn"
+
 # Name for my player.
 var player_name = "The Warrior"
+var player_role = DEFAULT_ROLE
 
 # Names for remote players in id:name format.
 var players = {}
 var players_ready = []
+
+# Each player's role [id:role]
+var roles = {}
 
 # Signals to let lobby GUI know what's going on.
 signal player_list_changed()
@@ -23,7 +40,7 @@ signal game_error(what)
 # Callback from SceneTree.
 func _player_connected(id):
 	# Registration of a client beings here, tell the connected player that we are here.
-	rpc_id(id, "register_player", player_name)
+	rpc_id(id, "register_player", player_name, player_role)
 	print(id)
 
 
@@ -42,6 +59,7 @@ func _player_disconnected(id):
 func _connected_ok():
 	# We just connected to a server
 	emit_signal("connection_succeeded")
+	print("connected")
 
 
 # Callback from SceneTree, only for clients (not server).
@@ -58,10 +76,18 @@ func _connected_fail():
 
 # Lobby management functions.
 
-remote func register_player(new_player_name):
+remote func register_player(new_player_name, new_player_role):
 	var id = get_tree().get_rpc_sender_id()
 	print(id)
 	players[id] = new_player_name
+	roles[id] = new_player_role
+	emit_signal("player_list_changed")
+
+remote func register_role(role):
+	# func called by a rpc_id each times someone updates its role
+	var id = get_tree().get_rpc_sender_id()
+	roles[id] = role
+	print("roles : ", roles[id])
 	emit_signal("player_list_changed")
 
 
@@ -72,16 +98,20 @@ func unregister_player(id):
 
 remote func pre_start_game(spawn_points):
 	# Change scene.
-	var world = load("res://World.tscn").instance()
+	var world = load(MAP_OBJ).instance()
 	get_tree().get_root().add_child(world)
 
 	get_tree().get_root().get_node("Lobby").hide()
 
-	var player_scene = load("res://PlayerSeeker.tscn")
+	var player_scene = load(SEEKER_OBJ) if player_role == SEEKER else load(HIDER_OBJ) #ternary is like in python : [value_condition_true] if [condition] else [value_condition_false]
 
 	for p_id in spawn_points:
 		var spawn_pos = world.get_node("SpawnPoints/" + str(spawn_points[p_id])).position
-		var player = player_scene.instance()
+		var player
+		if p_id == get_tree().get_network_unique_id():
+			player = player_scene.instance()
+		else:
+			player = (load(SEEKER_OBJ) if get_player_role_from_pid(p_id) == SEEKER else load(HIDER_OBJ)).instance()
 
 		player.set_name(str(p_id)) # Use unique ID as node name.
 		player.position=spawn_pos
@@ -139,6 +169,26 @@ func get_player_list():
 
 func get_player_name():
 	return player_name
+
+func get_player_role():
+	return player_role
+	
+func toggle_prole():
+	if player_role == SEEKER:
+		player_role = HIDER
+	else:
+		player_role = HIDER
+	rpc("register_role", player_role)
+	emit_signal("player_list_changed") #to refrech locally since we only update the other clients here (func called by rpc is remote and not remotesync, so there's no local call)
+
+func get_player_role_from_pname(player): #! IF 2 PLAYERS SHARE THE SAME NAME THIS WON'T WORK CORRECTLY
+	for p in players:
+		if players[p] == player:
+			return roles[p]
+	return "Error"
+	
+func get_player_role_from_pid(id):
+	return roles[id]
 
 
 func begin_game():
