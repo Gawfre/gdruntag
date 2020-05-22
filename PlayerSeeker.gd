@@ -4,7 +4,7 @@ const DETECT_RADIUS = 200
 const FOV = 80
 var angle = 0
 var prevmousepos = Vector2.ZERO
-var detect_count = 0
+var detect_count = []
 
 var direction = Vector2()
 var draw_color = GREEN
@@ -46,7 +46,7 @@ func _physics_process(_delta):
 		
 		angle = 90 - rad2deg(direction.angle()) # Thx to black magic we get the angle we want by inverting x and y value in V2 variable direction
 		
-		var detect_count = []
+		detect_count = []
 		for node in get_tree().get_nodes_in_group('detectable'):
 			if pos.distance_to(node.position) < DETECT_RADIUS:
 				# Find the angle to the node, using the dot product
@@ -83,7 +83,7 @@ func _physics_process(_delta):
 	if get_tree().is_network_server():
 		if draw_color == COLOR_DETECTED:
 			for nd in detect_count:
-				nd.detected(_delta)
+				nd.detected()
 
 func _draw():
 	draw_circle_arc_poly(Vector2(), DETECT_RADIUS,  angle - FOV/2, angle + FOV/2, draw_color)
