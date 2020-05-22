@@ -4,13 +4,15 @@ var ACCELERATIONHIDER = 3000
 var MAX_SPEEDHIDER = 500
 var pos = Vector2()
 var direction = Vector2()
-var lifepoints = 100
+var lifepoints = 10 #100
 var prev_lp = lifepoints
 var detected = false
+var new_inst = self
 
 puppet var puppet_lp = lifepoints
 
 remotesync var remote_dtct = false
+puppet var change = false
 
 func _ready():
 	set_physics_process(true)
@@ -36,17 +38,23 @@ func _physics_process(_delta):
 			lifepoints = 100
 		elif lifepoints < 0:
 			lifepoints = 0
+			become_seeker()
+			return
 		rset_unreliable("puppet_lp", lifepoints)
 		detected = false
 		rset_unreliable("remote_dtct", detected)
+		
 	else:
 		lifepoints = puppet_lp
 		#sync with pupped vars
+		if change:
+			become_seeker()
+			return
 	
 	#var Player = get_tree().get_root().get_node("./Root/PlayerSeeker")
 	#direction = (position - Player.position).normalized()
 	#pos = position
-	print(lifepoints)
+	#print(lifepoints)
 	get_node("LP_Bar").update_lp(lifepoints)
 	update()
 	#IF LP < 0 BECOME SEEKER OBJECT
@@ -63,3 +71,23 @@ func detected(): #change in a detected? (true/false) and then update in _process
 		detected = remote_dtct
 		#sync with pupped vars
 
+func become_seeker():
+	if is_network_master():
+		#rset("change", true)
+		print("name = ", self.get_name())
+		self.remove_from_group("detectable")
+		remove_child(self.get_node("LP_Bar"))
+		new_inst = load("res://PlayerSeeker.tscn").instance()
+		new_inst.set_name(self.get_name())
+		new_inst.set_network_master(self.get_network_master())
+		rset("change", true)
+		self.replace_by(new_inst, true)
+	elif change:
+		#new_inst.set_name(self.get_name())
+		self.remove_from_group("detectable")
+		remove_child(self.get_node("LP_Bar"))
+		new_inst = load("res://PlayerSeeker.tscn").instance()
+		new_inst.set_name(self.get_name())
+		new_inst.set_network_master(self.get_network_master())
+		self.replace_by(new_inst)
+ 

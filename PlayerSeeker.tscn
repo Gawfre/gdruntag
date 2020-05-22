@@ -15,4 +15,5 @@ drag_margin_bottom = 0.3
 [node name="Label" parent="." index="4"]
 margin_top = -55.0
 margin_bottom = -34.0
+align = 1
 valign = 1
