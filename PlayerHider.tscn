@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://PlayerHider.gd" type="Script" id=2]
+[ext_resource path="res://LP_Bar.tscn" type="PackedScene" id=3]
 
 [node name="PlayerHider" groups=[
 "detectable",
@@ -13,3 +14,16 @@ drag_margin_left = 0.3
 drag_margin_top = 0.3
 drag_margin_right = 0.3
 drag_margin_bottom = 0.3
+
+[node name="Label" parent="." index="4"]
+margin_left = -32.0
+margin_top = -65.0
+margin_right = 32.0
+margin_bottom = -44.0
+align = 1
+
+[node name="LP_Bar" parent="." index="5" instance=ExtResource( 3 )]
+margin_left = -40.0
+margin_top = -45.0
+margin_right = -40.0
+margin_bottom = -44.8
