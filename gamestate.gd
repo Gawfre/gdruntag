@@ -177,7 +177,7 @@ func toggle_prole():
 	if player_role == SEEKER:
 		player_role = HIDER
 	else:
-		player_role = HIDER
+		player_role = SEEKER
 	rpc("register_role", player_role)
 	emit_signal("player_list_changed") #to refrech locally since we only update the other clients here (func called by rpc is remote and not remotesync, so there's no local call)
 
