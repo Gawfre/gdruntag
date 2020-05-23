@@ -1,7 +1,7 @@
 extends Node
 
 # Default game port. Can be any number between 1024 and 49151.
-const DEFAULT_PORT = 10567
+const DEFAULT_PORT = 38492#10567
 
 # Max number of players.
 const MAX_PEERS = 12
@@ -29,6 +29,8 @@ var players_ready = []
 
 # Each player's role [id:role]
 var roles = {}
+
+var upnp = null
 
 # Signals to let lobby GUI know what's going on.
 signal player_list_changed()
@@ -154,7 +156,15 @@ func host_game(new_player_name):
 	var host = NetworkedMultiplayerENet.new()
 	host.create_server(DEFAULT_PORT, MAX_PEERS)
 	get_tree().set_network_peer(host)
+	upnp = UPNP.new()
+	print("discover ", upnp.discover())
+	print("add ptfwd on ", DEFAULT_PORT, " ", upnp.add_port_mapping(DEFAULT_PORT))
 
+func _notification(what):
+	if what == MainLoop.NOTIFICATION_WM_QUIT_REQUEST:
+		print("exiting...")
+		if upnp != null: #if upnp.get_gateway()
+			print("delete ", upnp.delete_port_mapping(DEFAULT_PORT))
 
 func join_game(ip, new_player_name):
 	player_name = new_player_name
