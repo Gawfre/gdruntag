@@ -5,6 +5,7 @@ const FOV = 80
 var angle = 0
 var prevmousepos = Vector2.ZERO
 var detect_count = []
+const type = gamestate.SEEKER
 
 var direction = Vector2()
 var draw_color = GREEN
@@ -14,7 +15,7 @@ var MAX_SPEEDSEEKER = 500
 puppet var puppet_direction = Vector2()
 puppet var puppet_angle = 0
 puppet var puppet_color = draw_color
-puppet var puppet_count = []
+remotesync var puppet_count = []
 
 func _init():
 	.ACCELERATION_set(ACCELERATIONSEEKER)
@@ -54,7 +55,7 @@ func _physics_process(_delta):
 				var angle_to_node = rad2deg(Vector2(direction.y,direction.x).angle_to( (node.position - position).normalized() ))
 				#var angle_to_node = rad2deg(acos(dot_product))
 				if  abs(angle_to_node) < FOV/2:
-					detect_count.push_back(node)
+					detect_count.push_back(node.get_path())
 				
 				#If it's within the Player's cone of vision, the object is detected
 	
@@ -77,13 +78,15 @@ func _physics_process(_delta):
 		#direction = puppet_direction
 		angle = puppet_angle
 		draw_color = puppet_color
-		detect_count = puppet_count
+		detect_count = puppet_count#instance_from_id(puppet_count)
 		update()
 		
 	if get_tree().is_network_server():
 		if draw_color == COLOR_DETECTED:
 			for nd in detect_count:
-				nd.detected()
+				var dn = get_tree().get_root().get_node(nd)#instance_from_id(nd.object_id)
+				if dn.type == gamestate.HIDER:
+					dn.detected()
 
 func _draw():
 	draw_circle_arc_poly(Vector2(), DETECT_RADIUS,  angle - FOV/2, angle + FOV/2, draw_color)

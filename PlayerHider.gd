@@ -8,6 +8,7 @@ var lifepoints = 10 #100
 var prev_lp = lifepoints
 var detected = false
 var new_inst = self
+const type = gamestate.HIDER
 
 puppet var puppet_lp = lifepoints
 
