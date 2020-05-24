@@ -1,7 +1,7 @@
 extends "res://Player.gd"
 
-var ACCELERATIONHIDER = 3000
-var MAX_SPEEDHIDER = 500
+var ACCELERATION_CONST = 3000
+var MAX_SPEED_CONST = 500
 var pos = Vector2()
 var direction = Vector2()
 var lifepoints = 10 #100
@@ -21,7 +21,8 @@ func _ready():
 	
 
 func _init():
-	.ACCELERATION_set(ACCELERATIONHIDER)
+	.ACCELERATION_set(ACCELERATION_CONST)
+	.MAX_SPEED_set(MAX_SPEED_CONST)
 
 func set_player_name(new_name):
 	.set_player_name(new_name)

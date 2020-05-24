@@ -8,9 +8,15 @@ var motion = Vector2.ZERO
 func ACCELERATION_set(new_value):
 	ACCELERATION = new_value
 
-
 func ACCELERATION_get():
 	return ACCELERATION 
+	
+func MAX_SPEED_set(new_value):
+	MAX_SPEED = new_value
+
+func MAX_SPEED_get():
+	return MAX_SPEED
+
 
 func set_player_name(new_name):
 	get_node("Label").set_text(new_name)

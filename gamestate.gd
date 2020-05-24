@@ -114,7 +114,7 @@ remote func pre_start_game(spawn_points):
 			player = player_scene.instance()
 		else:
 			player = (load(SEEKER_OBJ) if get_player_role_from_pid(p_id) == SEEKER else load(HIDER_OBJ)).instance()
-
+		player.add_to_group("player")
 		player.set_name(str(p_id)) # Use unique ID as node name.
 		player.position=spawn_pos
 		player.set_network_master(p_id) #set unique id as master.

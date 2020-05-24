@@ -9,8 +9,8 @@ const type = gamestate.SEEKER
 
 var direction = Vector2()
 var draw_color = GREEN
-var ACCELERATIONSEEKER = 1000
-var MAX_SPEEDSEEKER = 500
+var ACCELERATION_CONST = 1000
+var MAX_SPEED_CONST = 250
 
 puppet var puppet_direction = Vector2()
 puppet var puppet_angle = 0
@@ -18,7 +18,8 @@ puppet var puppet_color = draw_color
 remotesync var puppet_count = []
 
 func _init():
-	.ACCELERATION_set(ACCELERATIONSEEKER)
+	.ACCELERATION_set(ACCELERATION_CONST)
+	.MAX_SPEED_set(MAX_SPEED_CONST)
 
 func set_player_name(new_name):
 	.set_player_name(new_name)

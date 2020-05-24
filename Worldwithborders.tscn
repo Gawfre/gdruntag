@@ -12,9 +12,7 @@
 [node name="PlayerSeeker" parent="." instance=ExtResource( 1 )]
 position = Vector2( 551.254, 304.479 )
 
-[node name="PlayerHider" parent="." groups=[
-"detectable",
-] instance=ExtResource( 2 )]
+[node name="PlayerHider" parent="." instance=ExtResource( 2 )]
 position = Vector2( 681.435, 402.514 )
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
