@@ -101,7 +101,7 @@ func _on_server_setup_done():
 	refresh_lobby()
 	print(get_tree().get_network_peer())
 	$Connection/IPAddress.text = gamestate.upnp.query_external_address()
-	$Connection/Port.text = gamestate.server_port
+	$Connection/Port.text = String(gamestate.server_port)
 
 func _on_PortInfoPopup_about_to_show():
 	$Connection/HostButton.disabled = true

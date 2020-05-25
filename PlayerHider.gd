@@ -10,6 +10,14 @@ var detected = false
 var new_inst = self
 const type = gamestate.HIDER
 
+var bool_speed_decrement = false
+var delay_speed_timer = 3
+var timer_speed
+var base_speed = MAX_SPEED_CONST
+var MAX_RATIO_BOOST_SPEED = 1.5
+var bool_change_speed = false
+puppet var puppet_bool_speed = bool_change_speed
+puppet var puppet_bool_speed_decrement = bool_speed_decrement
 puppet var puppet_lp = lifepoints
 
 remotesync var remote_dtct = false
@@ -18,7 +26,11 @@ puppet var change = false
 func _ready():
 	set_physics_process(true)
 	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN) #hide mouse
-	
+	timer_speed = Timer.new()
+	timer_speed.set_one_shot(true)
+	timer_speed.set_wait_time(delay_speed_timer)
+	timer_speed.connect("timeout", self, "on_timeout_speed_complete")
+	add_child(timer_speed) #TO-DO : instanciate timer when walking into a boost
 
 func _init():
 	.ACCELERATION_set(ACCELERATION_CONST)
@@ -27,10 +39,36 @@ func _init():
 func set_player_name(new_name):
 	.set_player_name(new_name)
 	
+func on_timeout_speed_complete():
+	bool_speed_decrement = true
+	rset_unreliable("puppet_bool_speed_decrement", bool_speed_decrement)
+	
+func set_bool_speed():
+	bool_change_speed = true	
+	rset_unreliable("puppet_bool_speed", bool_change_speed)
+	
 func _physics_process(_delta):
 	detected = remote_dtct
 	if is_network_master():#get_tree().is_network_server():#
 		#if nb_fdetected the same for 360 frames (6sec)
+		if bool_change_speed:
+			if MAX_SPEED_CONST < MAX_RATIO_BOOST_SPEED * base_speed:
+				MAX_SPEED_CONST += 50
+				.MAX_SPEED_set(MAX_SPEED_CONST)
+				print("vitesse actuelle incr " + String(MAX_SPEED_CONST))
+			else:
+				bool_change_speed = false	
+				rset_unreliable("puppet_bool_speed", bool_change_speed)
+				timer_speed.start()
+				print("timer started")
+		if bool_speed_decrement:
+			if MAX_SPEED_CONST > base_speed:
+				MAX_SPEED_CONST -= 50.0
+				.MAX_SPEED_set(MAX_SPEED_CONST)
+				print("vitesse actuelle decr " + String(MAX_SPEED_CONST))
+			elif MAX_SPEED_CONST == base_speed:
+				bool_speed_decrement = false
+				rset_unreliable("puppet_bool_speed_decrement", bool_speed_decrement)
 		if prev_lp == lifepoints:
 			lifepoints += 1 * _delta / 8 #8sec = delta * 1/8
 		prev_lp = lifepoints
@@ -48,6 +86,8 @@ func _physics_process(_delta):
 		
 	else:
 		lifepoints = puppet_lp
+		bool_change_speed = puppet_bool_speed
+		bool_speed_decrement = puppet_bool_speed_decrement
 		#sync with pupped vars
 		if change:
 			become_seeker()

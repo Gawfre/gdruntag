@@ -12,6 +12,18 @@ var draw_color = GREEN
 var ACCELERATION_CONST = 1000
 var MAX_SPEED_CONST = 250
 
+
+var bool_speed_decrement = false
+var delay_speed_timer = 3
+var timer_speed
+var base_speed = MAX_SPEED_CONST
+var MAX_RATIO_BOOST_SPEED = 1.5
+var bool_change_speed = false
+puppet var puppet_bool_speed = bool_change_speed
+puppet var puppet_bool_speed_decrement = bool_speed_decrement
+
+
+
 puppet var puppet_direction = Vector2()
 puppet var puppet_angle = 0
 puppet var puppet_color = draw_color
@@ -20,10 +32,23 @@ remotesync var puppet_count = []
 func _init():
 	.ACCELERATION_set(ACCELERATION_CONST)
 	.MAX_SPEED_set(MAX_SPEED_CONST)
+	timer_speed = Timer.new()
+	timer_speed.set_one_shot(true)
+	timer_speed.set_wait_time(delay_speed_timer)
+	timer_speed.connect("timeout", self, "on_timeout_speed_complete")
+	add_child(timer_speed) #TO-DO : instanciate timer when walking into a boost
 
 func set_player_name(new_name):
 	.set_player_name(new_name)
 
+func set_bool_speed():
+	bool_change_speed = true	
+	rset_unreliable("puppet_bool_speed", bool_change_speed)
+	
+func on_timeout_speed_complete():
+	bool_speed_decrement = true
+	rset_unreliable("puppet_bool_speed_decrement", bool_speed_decrement)
+	
 # Drawing the FOV
 const RED = Color(1.0, 0, 0, 0.4)
 const GREEN = Color(0, 1.0, 0, 0.4)
@@ -34,6 +59,25 @@ func _ready():
 	
 func _physics_process(_delta):
 	if is_network_master():
+		if bool_change_speed:
+			if MAX_SPEED_CONST < MAX_RATIO_BOOST_SPEED * base_speed:
+				MAX_SPEED_CONST += 50
+				.MAX_SPEED_set(MAX_SPEED_CONST)
+				print("vitesse actuelle incr " + String(MAX_SPEED_CONST))
+			else:
+				bool_change_speed = false	
+				rset_unreliable("puppet_bool_speed", bool_change_speed)
+				timer_speed.start()
+				print("timer started")
+		if bool_speed_decrement:
+			if MAX_SPEED_CONST > base_speed:
+				MAX_SPEED_CONST -= 50.0
+				.MAX_SPEED_set(MAX_SPEED_CONST)
+				print("vitesse actuelle decr " + String(MAX_SPEED_CONST))
+			elif MAX_SPEED_CONST == base_speed:
+				bool_speed_decrement = false
+				rset_unreliable("puppet_bool_speed_decrement", bool_speed_decrement)
+		
 		var pos = position
 
 		if prevmousepos != get_viewport().get_mouse_position():
@@ -71,6 +115,8 @@ func _physics_process(_delta):
 		rset_unreliable("puppet_color", draw_color)
 		rset_unreliable("puppet_count", detect_count)
 	else:
+		bool_change_speed = puppet_bool_speed
+		bool_speed_decrement = puppet_bool_speed_decrement
 		#direction = puppet_direction
 		angle = puppet_angle
 		draw_color = puppet_color

@@ -6,6 +6,8 @@
 [node name="Lobby" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+margin_top = -1.36041
+margin_bottom = -1.36041
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -164,6 +166,7 @@ margin_left = -1.92677
 margin_top = 3.06961
 margin_right = -2.05876
 margin_bottom = -0.0413818
+text = "38492"
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -299,9 +302,9 @@ __meta__ = {
 }
 
 [node name="AdvancedButton" type="Button" parent="PortInfoPopup"]
-anchor_left = 0.167
+anchor_left = 0.163963
 anchor_top = 0.76
-anchor_right = 0.396
+anchor_right = 0.392963
 anchor_bottom = 0.92
 margin_left = -0.127975
 margin_top = -1.52588e-05
