@@ -2,6 +2,7 @@ extends Node
 
 # Default game port. Can be any number between 1024 and 49151.
 const DEFAULT_PORT = 38492#10567
+var server_port = DEFAULT_PORT
 
 # Max number of players.
 const MAX_PEERS = 12
@@ -151,25 +152,39 @@ remote func ready_to_start(id):
 		post_start_game()
 
 
+func launch_upnp(eport, iport):
+	upnp = UPNP.new()
+	#print("discover ", upnp.discover()) 
+	#print("add ptfwd on ", port, " ", upnp.add_port_mapping(port))
+	var discover = upnp.discover()
+	if discover != UPNP.UPNP_RESULT_SUCCESS:
+		print("discover failed ", discover) #UPNPResult.keys()[discover]
+		return discover
+	print("discover succeed")
+	var ptfwd = upnp.add_port_mapping(eport, iport)
+	if ptfwd != UPNP.UPNP_RESULT_SUCCESS:
+		print("ptfwd failed ", ptfwd)
+	else:
+		server_port = iport
+	return ptfwd
+	
+
 func host_game(new_player_name):
 	player_name = new_player_name
 	var host = NetworkedMultiplayerENet.new()
-	host.create_server(DEFAULT_PORT, MAX_PEERS)
+	host.create_server(server_port, MAX_PEERS)
 	get_tree().set_network_peer(host)
-	upnp = UPNP.new()
-	print("discover ", upnp.discover())
-	print("add ptfwd on ", DEFAULT_PORT, " ", upnp.add_port_mapping(DEFAULT_PORT))
 
 func _notification(what):
 	if what == MainLoop.NOTIFICATION_WM_QUIT_REQUEST:
 		print("exiting...")
 		if upnp != null: #if upnp.get_gateway()
-			print("delete ", upnp.delete_port_mapping(DEFAULT_PORT))
+			print("delete ", upnp.delete_port_mapping(server_port))
 
-func join_game(ip, new_player_name):
+func join_game(ip, port, new_player_name):
 	player_name = new_player_name
 	var client = NetworkedMultiplayerENet.new()
-	client.create_client(ip, DEFAULT_PORT)
+	client.create_client(ip, port)
 	get_tree().set_network_peer(client)
 
 

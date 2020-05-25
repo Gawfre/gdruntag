@@ -1,27 +1,24 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://Lobby.gd" type="Script" id=1]
+[ext_resource path="res://PortInfoPopup.gd" type="Script" id=2]
 
 [node name="Lobby" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 5.97079
-margin_top = 1.01343
-margin_right = 5.97083
-margin_bottom = 1.01343
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Players" type="Panel" parent="."]
-anchor_left = 0.331
+anchor_left = 0.5
 anchor_top = 0.159
-anchor_right = 0.663
+anchor_right = 0.5
 anchor_bottom = 0.59
-margin_left = 0.215759
+margin_left = -170.0
 margin_top = -0.240219
-margin_right = 0.247742
+margin_right = 170.0
 margin_bottom = 0.15976
 
 [node name="Label" type="Label" parent="Players"]
@@ -77,14 +74,17 @@ __meta__ = {
 }
 
 [node name="Connection" type="Panel" parent="."]
-anchor_left = 0.35
+anchor_left = 0.5
 anchor_top = 0.623
-anchor_right = 0.729
+anchor_right = 0.5
 anchor_bottom = 0.951
-margin_left = -0.400024
+margin_left = -194.0
 margin_top = 0.199982
-margin_right = -0.496033
+margin_right = 194.0
 margin_bottom = 0.399963
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="PseudoLabel" type="Label" parent="Connection"]
 anchor_left = 0.09
@@ -140,6 +140,34 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="PortLabel" type="Label" parent="Connection"]
+anchor_left = 0.113
+anchor_top = 0.777
+anchor_right = 0.245
+anchor_bottom = 0.898
+margin_left = 0.185238
+margin_top = 1.91762
+margin_right = -0.150772
+margin_bottom = 0.984604
+text = "Port :"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Port" type="LineEdit" parent="Connection"]
+anchor_left = 0.237
+anchor_top = 0.761
+anchor_right = 0.526
+anchor_bottom = 0.924
+margin_left = -1.92677
+margin_top = 3.06961
+margin_right = -2.05876
+margin_bottom = -0.0413818
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="HostButton" type="Button" parent="Connection"]
 anchor_left = 0.779
 anchor_top = 0.196
@@ -167,7 +195,127 @@ text = "Rejoindre"
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="PortInfoPopup" type="WindowDialog" parent="."]
+visible = true
+anchor_left = -0.0078125
+anchor_right = -0.0078125
+margin_left = -429.971
+margin_top = 118.987
+margin_right = -45.9708
+margin_bottom = 318.987
+window_title = "Entrer le port"
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="IntPortLabel" type="Label" parent="PortInfoPopup"]
+anchor_left = 0.146
+anchor_top = 0.205
+anchor_right = 0.274
+anchor_bottom = 0.326
+margin_left = -1.06397
+margin_top = 0.999996
+margin_right = 0.136017
+margin_bottom = 0.0669632
+grow_horizontal = 0
+text = "Port :"
+align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="InternalPort" type="LineEdit" parent="PortInfoPopup"]
+anchor_left = 0.307
+anchor_top = 0.19
+anchor_right = 0.596
+anchor_bottom = 0.337
+margin_left = 0.11203
+margin_top = -3.8147e-06
+margin_right = -0.019989
+margin_bottom = 0.0890121
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ExtPortLabel" type="Label" parent="PortInfoPopup"]
+visible = false
+anchor_left = 0.146
+anchor_top = 0.455
+anchor_right = 0.274
+anchor_bottom = 0.571
+margin_left = -1.06397
+margin_right = 0.136017
+margin_bottom = 0.0669632
+grow_horizontal = 0
+text = "External Port :"
+align = 2
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="ExternalPort" type="LineEdit" parent="PortInfoPopup"]
+visible = false
+anchor_left = 0.307
+anchor_top = 0.435
+anchor_right = 0.596
+anchor_bottom = 0.582
+margin_left = 0.11203
+margin_top = -7.62939e-06
+margin_right = -0.019989
+margin_bottom = 0.0890121
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ConfirmPort" type="Button" parent="PortInfoPopup"]
+anchor_left = 0.667
+anchor_top = 0.19
+anchor_right = 0.812
+anchor_bottom = 0.35
+margin_left = -0.128021
+margin_top = -3.8147e-06
+margin_right = 0.191986
+margin_bottom = -7.62939e-06
+text = "OK"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HelpButton" type="Button" parent="PortInfoPopup"]
+anchor_left = 0.583
+anchor_top = 0.76
+anchor_right = 0.812
+anchor_bottom = 0.92
+margin_left = 0.127991
+margin_top = -1.52588e-05
+margin_right = 0.191986
+text = "Aide"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AdvancedButton" type="Button" parent="PortInfoPopup"]
+anchor_left = 0.167
+anchor_top = 0.76
+anchor_right = 0.396
+anchor_bottom = 0.92
+margin_left = -0.127975
+margin_top = -1.52588e-05
+margin_right = -0.0639801
+text = "Avancé"
+__meta__ = {
+"_edit_use_anchors_": true
+}
 [connection signal="pressed" from="Players/StartButton" to="." method="_on_StartButton_pressed"]
 [connection signal="pressed" from="Players/ChangeRole" to="." method="_on_ChangeRole_pressed"]
 [connection signal="pressed" from="Connection/HostButton" to="." method="_on_HostButton_pressed"]
 [connection signal="pressed" from="Connection/JoinButton" to="." method="_on_JoinButton_pressed"]
+[connection signal="about_to_show" from="PortInfoPopup" to="." method="_on_PortInfoPopup_about_to_show"]
+[connection signal="popup_hide" from="PortInfoPopup" to="." method="_on_PortInfoPopup_popup_hide"]
+[connection signal="pressed" from="PortInfoPopup/ConfirmPort" to="." method="_on_ConfirmPort_pressed"]
+[connection signal="pressed" from="PortInfoPopup/ConfirmPort" to="PortInfoPopup" method="_on_ConfirmPort_pressed"]
+[connection signal="pressed" from="PortInfoPopup/AdvancedButton" to="PortInfoPopup" method="_on_AdvancedButton_pressed"]

@@ -10,6 +10,13 @@ func _ready():
 	gamestate.connect("game_ended", self, "_on_game_ended")
 	gamestate.connect("game_error", self, "_on_game_error")
 	
+	$PortInfoPopup.connect("config_success", self, "_on_server_setup_done")
+	
+	$Connection/Port.text = str(gamestate.DEFAULT_PORT)
+	
+	$Players/StartButton.disabled = true
+	$Players/ChangeRole.disabled = true
+	
 # dict that gives infos for each player, provided its ID
 var player_info = {}
 # our infos
@@ -59,24 +66,23 @@ func refresh_lobby():
 	$Players/List.add_item(gamestate.get_player_name() + " [" + gamestate.get_player_role() + "] (You)")
 	for p in players:
 		$Players/List.add_item(p + " [" + gamestate.get_player_role_from_pname(p) + "]")
-
+	
 	$Players/StartButton.disabled = not get_tree().is_network_server()
+	$Players/ChangeRole.disabled = false
 
 
 
 func _on_HostButton_pressed():
-	print("hostpressed")
-	var player_name = $Connection/Pseudo.text
-	gamestate.host_game(player_name)
-	refresh_lobby()
-	print(get_tree().get_network_peer())
+	print("popuppressed")
+	$PortInfoPopup.popup_centered()
 
 
 func _on_JoinButton_pressed():
 	print("joinpressed")
 	var ip = $Connection/IPAddress.text
+	var port = int($Connection/Port.text)
 	var player_name = $Connection/Pseudo.text
-	gamestate.join_game(ip, player_name)
+	gamestate.join_game(ip, port, player_name)
 
 
 func _on_StartButton_pressed():
@@ -86,3 +92,28 @@ func _on_StartButton_pressed():
 func _on_ChangeRole_pressed():
 	gamestate.toggle_prole()
 	print("toggled_role: ", gamestate.get_player_role())
+	
+
+func _on_server_setup_done():
+	print("configdone")
+	var player_name = $Connection/Pseudo.text
+	gamestate.host_game(player_name)
+	refresh_lobby()
+	print(get_tree().get_network_peer())
+	$Connection/IPAddress.text = gamestate.upnp.query_external_address()
+	$Connection/Port.text = gamestate.server_port
+
+func _on_PortInfoPopup_about_to_show():
+	$Connection/HostButton.disabled = true
+	$Connection/JoinButton.disabled = true
+	$Connection/IPAddress.editable = false
+	$Connection/Pseudo.editable = false
+	$Connection/Port.editable = false
+
+
+func _on_PortInfoPopup_popup_hide():
+	$Connection/HostButton.disabled = false
+	$Connection/JoinButton.disabled = false
+	$Connection/IPAddress.editable = true
+	$Connection/Pseudo.editable = true
+	$Connection/Port.editable = true
