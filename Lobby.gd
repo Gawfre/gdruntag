@@ -61,11 +61,11 @@ const MAX_PLAYERS = 8
 
 func refresh_lobby():
 	var players = gamestate.get_player_list()
-	players.sort()
+	#players.sort()
 	$Players/List.clear()
 	$Players/List.add_item(gamestate.get_player_name() + " [" + gamestate.get_player_role() + "] (You)")
 	for p in players:
-		$Players/List.add_item(p + " [" + gamestate.get_player_role_from_pname(p) + "]")
+		$Players/List.add_item(players[p] + " [" + gamestate.get_player_role_from_pid(p)+ "]")
 	
 	$Players/StartButton.disabled = not get_tree().is_network_server()
 	$Players/ChangeRole.disabled = false

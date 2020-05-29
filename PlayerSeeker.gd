@@ -40,9 +40,12 @@ puppet var puppet_angle = 0
 puppet var puppet_color = draw_color
 remotesync var puppet_count = []
 
+var spr = null
+
 func _init():
 	.ACCELERATION_set(ACCELERATION_CONST)
 	.MAX_SPEED_set(MAX_SPEED_CONST)
+	spr = get_node("Sprite")
 	timer_speed = Timer.new()
 	timer_speed.set_one_shot(true)
 	timer_speed.set_wait_time(delay_speed_timer)
@@ -179,19 +182,24 @@ func _physics_process(_delta):
 		angle = puppet_angle
 		draw_color = puppet_color
 		detect_count = puppet_count
-	if not is_network_master():
-		#direction = puppet_direction
-		angle = puppet_angle
-		draw_color = puppet_color
-		detect_count = puppet_count#instance_from_id(puppet_count)
 		update()
 		
-	if get_tree().is_network_server():
-		if draw_color == COLOR_DETECTED:
-			for nd in detect_count:
-				var dn = get_tree().get_root().get_node(nd)#instance_from_id(nd.object_id)
-				if dn.type == gamestate.HIDER:
+	
+	if draw_color == COLOR_DETECTED:
+		for nd in detect_count:
+			var dn = get_tree().get_root().get_node(nd)#instance_from_id(nd.object_id)
+			if dn.type == gamestate.HIDER:
+				dn.sprite_spotted() #this works over a variable sync over network if it causes issue and we want our local game to be consistent, we can calculate draw_color and the detection locally here so it will be consistent locally but the data if a hider is seen and lose PV will only work if it is seen by a seeker on the server regardless of each local states
+				if get_tree().is_network_server():
 					dn.detected()
+	
+	print(angle)
+	spr.rotation_degrees = angle
+	if angle > 90:
+		spr.flip_v = true
+	else:
+		spr.flip_v = false
+		
 
 func _draw():
 	draw_circle_arc_poly(Vector2(), DETECT_RADIUS,  angle - FOV/2, angle + FOV/2, draw_color)

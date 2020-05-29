@@ -35,7 +35,9 @@ var bool_change_light = false
 puppet var puppet_bool_light = bool_change_light
 puppet var puppet_bool_light_decrement = bool_light_decrement
 
-
+var spr = null
+var spr_hidden = null #ideally we should be able to build or own ImageTexture or StreamTexture (from existing texture file)
+var spr_detected = null
 
 remotesync var remote_dtct = false
 puppet var change = false
@@ -43,6 +45,9 @@ puppet var change = false
 func _ready():
 	set_physics_process(true)
 	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN) #hide mouse
+	spr_hidden = get_node("Sprite")
+	spr_detected = get_node("SpriteSpot")
+	spr = spr_hidden
 	timer_speed = Timer.new()
 	timer_speed.set_one_shot(true)
 	timer_speed.set_wait_time(delay_speed_timer)
@@ -140,6 +145,10 @@ func _physics_process(_delta):
 		prev_lp = lifepoints
 		if detected:
 			lifepoints -= 2 * _delta
+			#spr.Texture = 
+			spr = spr_detected
+		else:
+			spr = spr_hidden
 		if lifepoints > 100:
 			lifepoints = 100
 		elif lifepoints < 0:
@@ -160,6 +169,13 @@ func _physics_process(_delta):
 			become_seeker()
 			return
 	
+	if spr == spr_detected:
+		spr_detected.visible = true
+		spr_hidden.visible = false
+		spr = spr_hidden
+	else:
+		spr_detected.visible = false
+		spr_hidden.visible = true
 	#var Player = get_tree().get_root().get_node("./Root/PlayerSeeker")
 	#direction = (position - Player.position).normalized()
 	#pos = position
@@ -186,6 +202,10 @@ func become_seeker():
 		print("name = ", self.get_name())
 		self.remove_from_group("detectable")
 		remove_child(self.get_node("LP_Bar"))
+		remove_child(self.get_node("Sprite"))
+		remove_child(self.get_node("SpriteSpot"))
+		spr = spr_hidden
+		spr.visible = true
 		new_inst = load("res://PlayerSeeker.tscn").instance()
 		new_inst.set_name(self.get_name())
 		new_inst.set_network_master(self.get_network_master())
@@ -195,8 +215,16 @@ func become_seeker():
 		#new_inst.set_name(self.get_name())
 		self.remove_from_group("detectable")
 		remove_child(self.get_node("LP_Bar"))
+		remove_child(self.get_node("Sprite"))
+		remove_child(self.get_node("SpriteSpot"))
+		spr = spr_hidden
+		spr.visible = true
 		new_inst = load("res://PlayerSeeker.tscn").instance()
 		new_inst.set_name(self.get_name())
 		new_inst.set_network_master(self.get_network_master())
 		self.replace_by(new_inst)
+		
+		
+func sprite_spotted():
+	spr = spr_detected
  

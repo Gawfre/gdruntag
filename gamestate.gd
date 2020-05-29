@@ -189,7 +189,7 @@ func join_game(ip, port, new_player_name):
 
 
 func get_player_list():
-	return players.values()
+	return players#.values()
 
 
 func get_player_name():
