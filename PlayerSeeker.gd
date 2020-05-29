@@ -32,6 +32,8 @@ var base_light = 1.0
 var MAX_LIGHT_VALUE = 5.0
 var MAX_RATIO_BOOST_LIGHT = 1.5
 var bool_change_light = false
+puppet var puppet_light_intensity = get_node("Light2D").energy
+puppet var puppet_light_scale = get_node("Light2D").texture_scale
 puppet var puppet_bool_light = bool_change_light
 puppet var puppet_bool_light_decrement = bool_light_decrement
 
@@ -78,7 +80,7 @@ func set_bool_light():
 	rset_unreliable("puppet_bool_light", bool_change_light)
 
 func on_timeout_light_complete():
-	bool_speed_decrement = true
+	bool_light_decrement = true
 	rset_unreliable("puppet_bool_light_decrement", bool_light_decrement)
 	
 func on_timeout_speed_complete():
@@ -121,6 +123,8 @@ func _physics_process(_delta):
 				if get_node("Light2D").energy < base_light * MAX_RATIO_BOOST_LIGHT:
 					get_node("Light2D").texture_scale += 1
 					get_node("Light2D").energy += 1
+					rset_unreliable("puppet_light_intensity", get_node("Light2D").energy)
+					rset_unreliable("puppet_light_scale", get_node("Light2D").texture_scale)
 					print("texture scale actuelle incr " + String(get_node("Light2D").texture_scale))
 					print("energy light actuelle incr " + String(get_node("Light2D").energy))
 				else:
@@ -132,6 +136,8 @@ func _physics_process(_delta):
 				if get_node("Light2D").energy > base_light:
 					get_node("Light2D").texture_scale -= 1
 					get_node("Light2D").energy -= 1
+					rset_unreliable("puppet_light_intensity", get_node("Light2D").energy)
+					rset_unreliable("puppet_light_scale", get_node("Light2D").texture_scale)
 					print("texture scale actuelle decr " + String(get_node("Light2D").texture_scale))
 					print("energy light actuelle decr " + String(get_node("Light2D").energy))
 				elif get_node("Light2D").energy == base_light:
@@ -175,6 +181,8 @@ func _physics_process(_delta):
 		rset_unreliable("puppet_color", draw_color)
 		rset_unreliable("puppet_count", detect_count)
 	else:
+		get_node("Light2D").texture_scale = puppet_light_scale
+		get_node("Light2D").energy = puppet_light_intensity
 		bool_change_light = puppet_bool_light
 		bool_change_speed = puppet_bool_speed
 		bool_speed_decrement = puppet_bool_speed_decrement

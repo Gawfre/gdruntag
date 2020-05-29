@@ -29,4 +29,4 @@ position = Vector2( 951.528, 631.2 )
 position = Vector2( -87.4261, 393.417 )
 
 [node name="CollectableLight" parent="." instance=ExtResource( 3 )]
-position = Vector2( -88.9334, 480.843 )
+position = Vector2( -155.11, 491.557 )
