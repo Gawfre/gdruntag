@@ -1,9 +1,11 @@
 extends "res://Collectable.gd"
 
+var boost_type = gamestate.BOOST_LIGHT
+
 remotesync func _on_Collectable_body_entered(body):
 	if body.is_in_group("player"):
 		if(!body.get_light_boost_allowed()):
-			body.set_bool_light()
+			body.set_bool_boost(boost_type)
 			queue_free()
 
 # Called when the node enters the scene tree for the first time.

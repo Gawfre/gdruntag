@@ -12,30 +12,6 @@ var draw_color = GREEN
 var ACCELERATION_CONST = 1000
 var MAX_SPEED_CONST = 250
 
-#VARIABLES FOR SPEED BOOST
-var bool_speed_boost_allowed = false
-var bool_speed_decrement = false
-var delay_speed_timer = 3
-var timer_speed
-var base_speed = MAX_SPEED_CONST
-var MAX_RATIO_BOOST_SPEED = 1.5
-var bool_change_speed = false
-puppet var puppet_bool_speed = bool_change_speed
-puppet var puppet_bool_speed_decrement = bool_speed_decrement
-
-#VARIABLES FOR LIGHT BOOST
-var bool_light_boost_allowed = false
-var bool_light_decrement = false
-var delay_light_timer = 3
-var timer_light
-var base_light = 1.0
-var MAX_LIGHT_VALUE = 5.0
-var MAX_RATIO_BOOST_LIGHT = 1.5
-var bool_change_light = false
-puppet var puppet_light_intensity = get_node("Light2D").energy
-puppet var puppet_light_scale = get_node("Light2D").texture_scale
-puppet var puppet_bool_light = bool_change_light
-puppet var puppet_bool_light_decrement = bool_light_decrement
 
 puppet var puppet_direction = Vector2()
 puppet var puppet_angle = 0
@@ -48,44 +24,19 @@ func _init():
 	.ACCELERATION_set(ACCELERATION_CONST)
 	.MAX_SPEED_set(MAX_SPEED_CONST)
 	spr = get_node("Sprite")
-	timer_speed = Timer.new()
-	timer_speed.set_one_shot(true)
-	timer_speed.set_wait_time(delay_speed_timer)
-	timer_speed.connect("timeout", self, "on_timeout_speed_complete")
-	add_child(timer_speed) #TO-DO : instanciate timer when walking into a boost
-	timer_light = Timer.new()
-	timer_light.set_one_shot(true)
-	timer_light.set_wait_time(delay_light_timer)
-	timer_light.connect("timeout", self, "on_timeout_light_complete")
-	add_child(timer_light) #TO-DO : instanciate timer when walking into a boost
 
-func get_speed_boost_allowed():
-	return bool_speed_boost_allowed
-
-func get_light_boost_allowed():
-	return bool_light_boost_allowed	
+func set_bool_boost(type_boost):
+	.set_bool_boost(type_boost)
 	
 func set_player_name(new_name):
 	.set_player_name(new_name)
+	
+func get_speed_boost_allowed():
+	.get_speed_boost_allowed()
+	
 
-func set_bool_speed():
-	bool_speed_boost_allowed = true
-	bool_change_speed = true	
-	rset_unreliable("puppet_bool_speed", bool_change_speed)
-	
-	
-func set_bool_light():
-	bool_light_boost_allowed = true
-	bool_change_light = true	
-	rset_unreliable("puppet_bool_light", bool_change_light)
-
-func on_timeout_light_complete():
-	bool_light_decrement = true
-	rset_unreliable("puppet_bool_light_decrement", bool_light_decrement)
-	
-func on_timeout_speed_complete():
-	bool_speed_decrement = true
-	rset_unreliable("puppet_bool_speed_decrement", bool_speed_decrement)
+func get_light_boost_allowed():
+	.get_light_boost_allowed()
 	
 # Drawing the FOV
 const RED = Color(1.0, 0, 0, 0.4)
@@ -98,52 +49,6 @@ func _ready():
 func _physics_process(_delta):
 	if is_network_master():
 		#BOOST SPEED PHYSICS PROCESS UPDATE
-		if bool_speed_boost_allowed:
-			if bool_change_speed:
-				if MAX_SPEED_CONST < MAX_RATIO_BOOST_SPEED * base_speed:
-					MAX_SPEED_CONST += 50
-					.MAX_SPEED_set(MAX_SPEED_CONST)
-					print("vitesse actuelle incr " + String(MAX_SPEED_CONST))
-				else:
-					bool_change_speed = false	
-					rset_unreliable("puppet_bool_speed", bool_change_speed)
-					timer_speed.start()
-					print("timer started")
-			if bool_speed_decrement:
-				if MAX_SPEED_CONST > base_speed:
-					MAX_SPEED_CONST -= 50.0
-					.MAX_SPEED_set(MAX_SPEED_CONST)
-					print("vitesse actuelle decr " + String(MAX_SPEED_CONST))
-				elif MAX_SPEED_CONST == base_speed:
-					bool_speed_decrement = false
-					bool_speed_boost_allowed = false
-					rset_unreliable("puppet_bool_speed_decrement", bool_speed_decrement)
-		if bool_light_boost_allowed:
-			if bool_change_light:
-				if get_node("Light2D").energy < base_light * MAX_RATIO_BOOST_LIGHT:
-					get_node("Light2D").texture_scale += 1
-					get_node("Light2D").energy += 1
-					rset_unreliable("puppet_light_intensity", get_node("Light2D").energy)
-					rset_unreliable("puppet_light_scale", get_node("Light2D").texture_scale)
-					print("texture scale actuelle incr " + String(get_node("Light2D").texture_scale))
-					print("energy light actuelle incr " + String(get_node("Light2D").energy))
-				else:
-					bool_change_light = false	
-					rset_unreliable("puppet_bool_light", bool_change_light)
-					timer_light.start()
-					print("timer started")
-			if bool_light_decrement:
-				if get_node("Light2D").energy > base_light:
-					get_node("Light2D").texture_scale -= 1
-					get_node("Light2D").energy -= 1
-					rset_unreliable("puppet_light_intensity", get_node("Light2D").energy)
-					rset_unreliable("puppet_light_scale", get_node("Light2D").texture_scale)
-					print("texture scale actuelle decr " + String(get_node("Light2D").texture_scale))
-					print("energy light actuelle decr " + String(get_node("Light2D").energy))
-				elif get_node("Light2D").energy == base_light:
-					bool_light_decrement = false
-					bool_light_boost_allowed = false
-					rset_unreliable("puppet_bool_light_decrement", bool_light_decrement)			
 		var pos = position
 
 		if prevmousepos != get_viewport().get_mouse_position():
@@ -181,11 +86,6 @@ func _physics_process(_delta):
 		rset_unreliable("puppet_color", draw_color)
 		rset_unreliable("puppet_count", detect_count)
 	else:
-		get_node("Light2D").texture_scale = puppet_light_scale
-		get_node("Light2D").energy = puppet_light_intensity
-		bool_change_light = puppet_bool_light
-		bool_change_speed = puppet_bool_speed
-		bool_speed_decrement = puppet_bool_speed_decrement
 		#direction = puppet_direction
 		angle = puppet_angle
 		draw_color = puppet_color

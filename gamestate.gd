@@ -11,6 +11,10 @@ const MAX_PEERS = 12
 const SEEKER = "seeker"
 const HIDER = "hider"
 
+#Define Boosts
+const BOOST_SPEED = "speed"
+const BOOST_LIGHT = "light"
+
 # Default role when connecting
 const DEFAULT_ROLE = SEEKER
 #const OTHER_ROLE = HIDER
