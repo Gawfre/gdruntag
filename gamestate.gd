@@ -256,15 +256,16 @@ func end_game():
 		get_tree().get_root().get_node("Root").queue_free()
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		get_tree().reload_current_scene()
-
+	
+	#if server disconnect clients? if they don't disconnect by themselves
 	emit_signal("game_ended")
 	players.clear()
 
 
 func _ready():
 	get_tree().connect("network_peer_connected", self, "_player_connected")
-	get_tree().connect("network_peer_disconnected", self,"_player_disconnected")
+	get_tree().connect("network_peer_disconnected", self,"unregister_player")
 	get_tree().connect("connected_to_server", self, "_connected_ok")
 	get_tree().connect("connection_failed", self, "_connected_fail")
-	get_tree().connect("server_disconnected", self, "_server_disconnected")
+	get_tree().connect("server_disconnected", self, "end_game")
 
