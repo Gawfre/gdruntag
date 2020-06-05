@@ -56,6 +56,7 @@ func _player_connected(id):
 
 func on_timeout_game_complete():
 	print("LE TIMER EST TERMINÉ")
+	timer_game.stop()
 	end_game()
 
 # Callback from SceneTree.
