@@ -250,9 +250,10 @@ func begin_game():
 
 
 func end_game():
-	if has_node("/root/World"): # Game is in progress.
+	if get_tree().get_root().has_node("Root"): # Game is in progress.
 		# End it
-		get_node("/root/World").queue_free()
+		get_tree().get_root().get_node("Root").queue_free()
+		get_tree().reload_current_scene()
 
 	emit_signal("game_ended")
 	players.clear()
@@ -264,3 +265,4 @@ func _ready():
 	get_tree().connect("connected_to_server", self, "_connected_ok")
 	get_tree().connect("connection_failed", self, "_connected_fail")
 	get_tree().connect("server_disconnected", self, "_server_disconnected")
+
