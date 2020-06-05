@@ -35,6 +35,10 @@ var players_ready = []
 # Each player's role [id:role]
 var roles = {}
 
+#Timer for hider
+var timer_game
+var delay_timer_game = 5.0
+
 var upnp = null
 
 # Signals to let lobby GUI know what's going on.
@@ -50,6 +54,9 @@ func _player_connected(id):
 	rpc_id(id, "register_player", player_name, player_role)
 	print(id)
 
+func on_timeout_game_complete():
+	print("LE TIMER EST TERMINÉ")
+	end_game()
 
 # Callback from SceneTree.
 func _player_disconnected(id):
@@ -142,6 +149,12 @@ remote func pre_start_game(spawn_points):
 
 remote func post_start_game():
 	get_tree().set_pause(false) # Unpause and unleash the game!
+	timer_game = Timer.new() #LAUNCH TIMER AND ADD AS A CHILD IN SCEN
+	timer_game.set_one_shot(true)
+	timer_game.set_wait_time(delay_timer_game)
+	timer_game.connect("timeout", self, "on_timeout_game_complete")
+	add_child(timer_game) 
+	timer_game.start()
 
 
 remote func ready_to_start(id):
@@ -201,6 +214,7 @@ func get_player_name():
 
 func get_player_role():
 	return player_role
+
 	
 func toggle_prole():
 	if player_role == SEEKER:
@@ -219,7 +233,6 @@ func get_player_role_from_pname(player): #! IF 2 PLAYERS SHARE THE SAME NAME THI
 func get_player_role_from_pid(id):
 	return roles[id]
 
-
 func begin_game():
 	assert(get_tree().is_network_server())
 
@@ -233,7 +246,6 @@ func begin_game():
 	# Call to pre-start game with the spawn points.
 	for p in players:
 		rpc_id(p, "pre_start_game", spawn_points)
-
 	pre_start_game(spawn_points)
 
 

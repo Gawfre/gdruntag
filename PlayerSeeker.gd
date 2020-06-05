@@ -101,7 +101,7 @@ func _physics_process(_delta):
 				if get_tree().is_network_server():
 					dn.detected()
 	
-	print(angle)
+	#print(angle)
 	spr.rotation_degrees = angle
 	if angle > 90:
 		spr.flip_v = true
