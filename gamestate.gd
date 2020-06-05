@@ -56,7 +56,6 @@ func _player_connected(id):
 
 func on_timeout_game_complete():
 	print("LE TIMER EST TERMINÉ")
-	timer_game.stop()
 	end_game()
 
 # Callback from SceneTree.
@@ -148,15 +147,19 @@ remote func pre_start_game(spawn_points):
 		post_start_game()
 
 
-remote func post_start_game():
-	get_tree().set_pause(false) # Unpause and unleash the game!
-	timer_game = Timer.new() #LAUNCH TIMER AND ADD AS A CHILD IN SCEN
+func set_timer():
+	timer_game = Timer.new() #LAUNCH TIMER AND ADD AS A CHILD IN SCENE
 	timer_game.set_one_shot(true)
 	timer_game.set_wait_time(delay_timer_game)
 	timer_game.connect("timeout", self, "on_timeout_game_complete")
-	add_child(timer_game) 
+	if get_tree().get_root().has_node("Root"): # Game is in progress.
+		add_child(timer_game) 
 	timer_game.start()
 
+
+remote func post_start_game():
+	get_tree().set_pause(false) # Unpause and unleash the game!
+	set_timer()
 
 remote func ready_to_start(id):
 	assert(get_tree().is_network_server())
@@ -168,6 +171,7 @@ remote func ready_to_start(id):
 		for p in players:
 			rpc_id(p, "post_start_game")
 		post_start_game()
+		players_ready.clear()
 
 
 func launch_upnp(eport, iport):
@@ -256,7 +260,6 @@ func end_game():
 		get_tree().get_root().get_node("Root").queue_free()
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		get_tree().reload_current_scene()
-
 	emit_signal("game_ended")
 	players.clear()
 
