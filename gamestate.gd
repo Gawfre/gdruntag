@@ -253,6 +253,7 @@ func end_game():
 	if get_tree().get_root().has_node("Root"): # Game is in progress.
 		# End it
 		get_tree().get_root().get_node("Root").queue_free()
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		get_tree().reload_current_scene()
 
 	emit_signal("game_ended")
