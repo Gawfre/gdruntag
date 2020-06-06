@@ -37,7 +37,7 @@ var roles = {}
 
 #Timer for hider
 var timer_game
-var delay_timer_game = 5.0
+var delay_timer_game = 300.0 #60*5 -> 5 minutes
 
 var upnp = null
 
