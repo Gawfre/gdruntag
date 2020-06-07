@@ -1,10 +1,37 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://PlayerHider.gd" type="Script" id=2]
 [ext_resource path="res://LP_Bar.tscn" type="PackedScene" id=3]
 [ext_resource path="res://hide_spot.svg" type="Texture" id=4]
 [ext_resource path="res://hide.svg" type="Texture" id=5]
+[ext_resource path="res://healthparticle.png" type="Texture" id=6]
+
+[sub_resource type="Gradient" id=1]
+colors = PoolColorArray( 0.0352941, 0.941176, 0.207843, 1, 0.0666667, 0.760784, 0.215686, 0.439216 )
+
+[sub_resource type="GradientTexture" id=2]
+gradient = SubResource( 1 )
+
+[sub_resource type="Curve" id=3]
+_data = [ Vector2( 0, 0.773864 ), 0.0, 0.0, 0, 0, Vector2( 1, 0.382955 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=4]
+curve = SubResource( 3 )
+
+[sub_resource type="ParticlesMaterial" id=5]
+emission_shape = 2
+emission_box_extents = Vector3( 5, 25, 1 )
+flag_disable_z = true
+spread = 0.0
+gravity = Vector3( 0, 0, 0 )
+initial_velocity = 25.0
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+linear_accel = 25.0
+scale = 0.1
+scale_curve = SubResource( 4 )
+color_ramp = SubResource( 2 )
 
 [node name="PlayerHider" groups=[
 "detectable",
@@ -31,7 +58,15 @@ margin_right = 32.0
 margin_bottom = -44.0
 align = 1
 
-[node name="LP_Bar" parent="." index="6" instance=ExtResource( 3 )]
+[node name="Particles2D" type="Particles2D" parent="." index="6"]
+position = Vector2( 1.40186, 2.10535 )
+rotation = -1.5708
+emitting = false
+lifetime = 2.0
+process_material = SubResource( 5 )
+texture = ExtResource( 6 )
+
+[node name="LP_Bar" parent="." index="7" instance=ExtResource( 3 )]
 margin_left = -40.0
 margin_top = -45.0
 margin_right = -40.0

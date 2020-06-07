@@ -321,6 +321,6 @@ __meta__ = {
 [connection signal="pressed" from="Connection/JoinButton" to="." method="_on_JoinButton_pressed"]
 [connection signal="about_to_show" from="PortInfoPopup" to="." method="_on_PortInfoPopup_about_to_show"]
 [connection signal="popup_hide" from="PortInfoPopup" to="." method="_on_PortInfoPopup_popup_hide"]
-[connection signal="pressed" from="PortInfoPopup/ConfirmPort" to="." method="_on_ConfirmPort_pressed"]
 [connection signal="pressed" from="PortInfoPopup/ConfirmPort" to="PortInfoPopup" method="_on_ConfirmPort_pressed"]
+[connection signal="pressed" from="PortInfoPopup/ConfirmPort" to="." method="_on_ConfirmPort_pressed"]
 [connection signal="pressed" from="PortInfoPopup/AdvancedButton" to="PortInfoPopup" method="_on_AdvancedButton_pressed"]
