@@ -6,7 +6,9 @@
 [node name="Lobby" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+margin_left = 1.05273
 margin_top = -1.36041
+margin_right = 1.05273
 margin_bottom = -1.36041
 script = ExtResource( 1 )
 __meta__ = {
