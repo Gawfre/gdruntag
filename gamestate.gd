@@ -35,6 +35,10 @@ var players_ready = []
 # Each player's role [id:role]
 var roles = {}
 
+#Timer for hider
+var timer_game
+var delay_timer_game = 300.0 #60*5 -> 5 minutes
+
 var upnp = null
 
 # Signals to let lobby GUI know what's going on.
@@ -50,6 +54,9 @@ func _player_connected(id):
 	rpc_id(id, "register_player", player_name, player_role)
 	print(id)
 
+func on_timeout_game_complete():
+	print("LE TIMER EST TERMINÉ")
+	end_game()
 
 # Callback from SceneTree.
 func _player_disconnected(id):
@@ -140,9 +147,19 @@ remote func pre_start_game(spawn_points):
 		post_start_game()
 
 
+func set_timer():
+	timer_game = Timer.new() #LAUNCH TIMER AND ADD AS A CHILD IN SCENE
+	timer_game.set_one_shot(true)
+	timer_game.set_wait_time(delay_timer_game)
+	timer_game.connect("timeout", self, "on_timeout_game_complete")
+	if get_tree().get_root().has_node("Root"): # Game is in progress.
+		add_child(timer_game) 
+	timer_game.start()
+
+
 remote func post_start_game():
 	get_tree().set_pause(false) # Unpause and unleash the game!
-
+	set_timer()
 
 remote func ready_to_start(id):
 	assert(get_tree().is_network_server())
@@ -154,6 +171,7 @@ remote func ready_to_start(id):
 		for p in players:
 			rpc_id(p, "post_start_game")
 		post_start_game()
+		players_ready.clear()
 
 
 func launch_upnp(eport, iport):
@@ -201,6 +219,7 @@ func get_player_name():
 
 func get_player_role():
 	return player_role
+
 	
 func toggle_prole():
 	if player_role == SEEKER:
@@ -219,7 +238,6 @@ func get_player_role_from_pname(player): #! IF 2 PLAYERS SHARE THE SAME NAME THI
 func get_player_role_from_pid(id):
 	return roles[id]
 
-
 func begin_game():
 	assert(get_tree().is_network_server())
 
@@ -233,22 +251,25 @@ func begin_game():
 	# Call to pre-start game with the spawn points.
 	for p in players:
 		rpc_id(p, "pre_start_game", spawn_points)
-
 	pre_start_game(spawn_points)
 
 
 func end_game():
-	if has_node("/root/World"): # Game is in progress.
+	if get_tree().get_root().has_node("Root"): # Game is in progress.
 		# End it
-		get_node("/root/World").queue_free()
-
+		get_tree().get_root().get_node("Root").queue_free()
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		get_tree().reload_current_scene()
+	
+	#if server disconnect clients? if they don't disconnect by themselves
 	emit_signal("game_ended")
 	players.clear()
 
 
 func _ready():
 	get_tree().connect("network_peer_connected", self, "_player_connected")
-	get_tree().connect("network_peer_disconnected", self,"_player_disconnected")
+	get_tree().connect("network_peer_disconnected", self,"unregister_player") #edit func _player_disconnected
 	get_tree().connect("connected_to_server", self, "_connected_ok")
 	get_tree().connect("connection_failed", self, "_connected_fail")
-	get_tree().connect("server_disconnected", self, "_server_disconnected")
+	get_tree().connect("server_disconnected", self, "end_game")
+
