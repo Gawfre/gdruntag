@@ -12,7 +12,9 @@ const type = gamestate.HIDER
 
 
 puppet var puppet_lp = lifepoints
+puppet var puppet_enable_particle = enable_particle
 
+var enable_particle = false
 var spr = null
 var spr_hidden = null #ideally we should be able to build or own ImageTexture or StreamTexture (from existing texture file)
 var spr_detected = null
@@ -51,15 +53,29 @@ func _physics_process(_delta):
 		#if nb_fdetected the same for 360 frames (6sec)
 		if prev_lp == lifepoints:
 			lifepoints += 1 * _delta / 8 #8sec = delta * 1/8
+			if lifepoints >= prev_lp:
+				if lifepoints < 100:
+					enable_particle = true
+					rset_unreliable("puppet_enable_particle", enable_particle)
+			else:
+				enable_particle = false
+				rset_unreliable("puppet_enable_particle", enable_particle)
 		prev_lp = lifepoints
+		
 		if detected:
 			lifepoints -= 2 * _delta
+			if lifepoints <= prev_lp:
+				if lifepoints < 100:
+					enable_particle = false
+					rset_unreliable("puppet_enable_particle", enable_particle)
 			#spr.Texture = 
 			spr = spr_detected
 		else:
 			spr = spr_hidden
 		if lifepoints > 100:
 			lifepoints = 100
+			enable_particle = false
+			rset_unreliable("puppet_enable_particle", enable_particle)
 		elif lifepoints < 0:
 			lifepoints = 0
 			become_seeker()
@@ -70,6 +86,7 @@ func _physics_process(_delta):
 		
 	else:
 		lifepoints = puppet_lp
+		enable_particle = puppet_enable_particle
 		#sync with pupped vars
 		if change:
 			become_seeker()
@@ -86,6 +103,12 @@ func _physics_process(_delta):
 	#direction = (position - Player.position).normalized()
 	#pos = position
 	#print(lifepoints)
+	if enable_particle:
+		if(get_node("Particles2D").emitting!=true):
+			get_node("Particles2D").emitting = true
+	else:
+		if(get_node("Particles2D").emitting!=false):
+			get_node("Particles2D").emitting = false
 	get_node("LP_Bar").update_lp(lifepoints)
 	update()
 	#IF LP < 0 BECOME SEEKER OBJECT
@@ -110,6 +133,7 @@ func become_seeker():
 		remove_child(self.get_node("LP_Bar"))
 		remove_child(self.get_node("Sprite"))
 		remove_child(self.get_node("SpriteSpot"))
+		remove_child(self.get_node("Particles2D"))
 		spr = spr_hidden
 		spr.visible = true
 		new_inst = load("res://PlayerSeeker.tscn").instance()
@@ -123,6 +147,7 @@ func become_seeker():
 		remove_child(self.get_node("LP_Bar"))
 		remove_child(self.get_node("Sprite"))
 		remove_child(self.get_node("SpriteSpot"))
+		remove_child(self.get_node("Particles2D"))
 		spr = spr_hidden
 		spr.visible = true
 		new_inst = load("res://PlayerSeeker.tscn").instance()
@@ -130,7 +155,5 @@ func become_seeker():
 		new_inst.set_network_master(self.get_network_master())
 		self.replace_by(new_inst)
 		
-		
 func sprite_spotted():
 	spr = spr_detected
- 
