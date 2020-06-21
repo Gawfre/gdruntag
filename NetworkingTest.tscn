@@ -69,10 +69,10 @@ anchor_left = 0.062
 anchor_top = 0.135
 anchor_right = 0.885
 anchor_bottom = 0.776
-margin_left = -0.10643
+margin_left = -0.106428
 margin_top = 0.0946312
 margin_right = 0.0735474
-margin_bottom = 0.0756226
+margin_bottom = 0.0756378
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -321,6 +321,6 @@ __meta__ = {
 [connection signal="pressed" from="Connection/JoinButton" to="." method="_on_JoinButton_pressed"]
 [connection signal="about_to_show" from="PortInfoPopup" to="." method="_on_PortInfoPopup_about_to_show"]
 [connection signal="popup_hide" from="PortInfoPopup" to="." method="_on_PortInfoPopup_popup_hide"]
-[connection signal="pressed" from="PortInfoPopup/ConfirmPort" to="PortInfoPopup" method="_on_ConfirmPort_pressed"]
 [connection signal="pressed" from="PortInfoPopup/ConfirmPort" to="." method="_on_ConfirmPort_pressed"]
+[connection signal="pressed" from="PortInfoPopup/ConfirmPort" to="PortInfoPopup" method="_on_ConfirmPort_pressed"]
 [connection signal="pressed" from="PortInfoPopup/AdvancedButton" to="PortInfoPopup" method="_on_AdvancedButton_pressed"]

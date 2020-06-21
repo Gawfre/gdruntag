@@ -160,8 +160,9 @@ func _physics_process(delta):
 		rset_unreliable("puppet_motion", motion)
 		rset_unreliable("puppet_pos", position)
 	else:
-		get_node("Light2D").texture_scale = puppet_light_scale
-		get_node("Light2D").energy = puppet_light_intensity
+		if(get_node("Light2D")!= null): 
+			get_node("Light2D").texture_scale = puppet_light_scale
+			get_node("Light2D").energy = puppet_light_intensity
 		position = puppet_pos
 		motion = puppet_motion	
 		bool_change_light = puppet_bool_light
