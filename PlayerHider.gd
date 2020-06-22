@@ -136,6 +136,7 @@ func become_seeker():
 		remove_child(self.get_node("Particles2D"))
 		spr = spr_hidden
 		spr.visible = true
+		self.set_filename("res://PlayerSeeker.tscn")
 		new_inst = load("res://PlayerSeeker.tscn").instance()
 		new_inst.set_name(self.get_name())
 		new_inst.set_network_master(self.get_network_master())
@@ -150,6 +151,7 @@ func become_seeker():
 		remove_child(self.get_node("Particles2D"))
 		spr = spr_hidden
 		spr.visible = true
+		self.set_filename("res://PlayerSeeker.tscn")
 		new_inst = load("res://PlayerSeeker.tscn").instance()
 		new_inst.set_name(self.get_name())
 		new_inst.set_network_master(self.get_network_master())

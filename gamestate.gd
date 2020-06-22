@@ -29,6 +29,7 @@ var player_name = "The Warrior"
 var player_role = DEFAULT_ROLE
 
 # Names for remote players in id:name format.
+var players_count
 var players = {}
 var players_ready = []
 
@@ -96,6 +97,14 @@ remote func register_player(new_player_name, new_player_role):
 	players[id] = new_player_name
 	roles[id] = new_player_role
 	emit_signal("player_list_changed")
+	
+remote func register_self_player(new_player_name, new_player_role):
+	var id = get_tree().get_network_unique_id()
+	print(id)
+	players[id] = new_player_name
+	roles[id] = new_player_role
+	emit_signal("player_list_changed")	
+
 
 remote func register_role(role):
 	# func called by a rpc_id each times someone updates its role
@@ -130,7 +139,6 @@ remote func pre_start_game(spawn_points):
 		player.set_name(str(p_id)) # Use unique ID as node name.
 		player.position=spawn_pos
 		player.set_network_master(p_id) #set unique id as master.
-
 		if p_id == get_tree().get_network_unique_id():
 			# If node for this peer id, set name.
 			player.set_player_name(player_name)
@@ -163,10 +171,9 @@ remote func post_start_game():
 
 remote func ready_to_start(id):
 	assert(get_tree().is_network_server())
-
+	#register_self_player(get_player_name(), get_player_role())
 	if not id in players_ready:
 		players_ready.append(id)
-
 	if players_ready.size() == players.size():
 		for p in players:
 			rpc_id(p, "post_start_game")
@@ -273,3 +280,27 @@ func _ready():
 	get_tree().connect("connection_failed", self, "_connected_fail")
 	get_tree().connect("server_disconnected", self, "end_game")
 
+func _physics_process(delta):
+	check_all_seekers()
+
+func check_all_seekers():
+	var seeker_numbers = 0
+	
+	for N in get_tree().get_root().get_children():
+		if N.get_child_count() > 0:
+			if (N.get_name() == "Root"):
+				for Y in N.get_children():
+					if Y.get_child_count() > 0:
+						#print("["+Y.get_name()+"]")
+						if(Y.get_name() == "Players"):
+							for U in Y.get_children():
+								players_count = Y.get_child_count()
+								print(U.name)
+								if(U.filename == SEEKER_OBJ):
+									seeker_numbers+=1
+	#print("seeker numbers = ")
+	#print(seeker_numbers)
+	#print("players_count = ")
+	#print(players_count)
+	if(seeker_numbers == players_count):
+		end_game()
