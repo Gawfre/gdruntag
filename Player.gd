@@ -30,8 +30,8 @@ var bool_light_decrement = false
 var delay_light_timer = 3
 var timer_light
 var base_light = 1.0
-var MAX_LIGHT_VALUE = 5.0
-var MAX_RATIO_BOOST_LIGHT = 1.5
+var MAX_LIGHT_VALUE = 1.0
+var MAX_RATIO_BOOST_LIGHT = 1.1
 var bool_change_light = false
 puppet var puppet_bool_light = bool_change_light
 puppet var puppet_bool_light_decrement = bool_light_decrement
@@ -121,8 +121,8 @@ func check_light_allowed():
 
 func increment_light():
 	if get_node("Light2D").energy < base_light * MAX_RATIO_BOOST_LIGHT:
-		get_node("Light2D").texture_scale += 1
-		get_node("Light2D").energy += 1
+		get_node("Light2D").texture_scale += 0.001
+		get_node("Light2D").energy += 0.001
 		rset_unreliable("puppet_light_intensity", get_node("Light2D").energy)
 		rset_unreliable("puppet_light_scale", get_node("Light2D").texture_scale)
 		print("texture scale actuelle incr " + String(get_node("Light2D").texture_scale))
@@ -135,8 +135,8 @@ func increment_light():
 
 func decrement_light():
 	if get_node("Light2D").energy > base_light:
-		get_node("Light2D").texture_scale -= 1
-		get_node("Light2D").energy -= 1
+		get_node("Light2D").texture_scale -= 0.001
+		get_node("Light2D").energy -= 0.001
 		rset_unreliable("puppet_light_intensity", get_node("Light2D").energy)
 		rset_unreliable("puppet_light_scale", get_node("Light2D").texture_scale)
 		print("texture scale actuelle decr " + String(get_node("Light2D").texture_scale))

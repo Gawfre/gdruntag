@@ -22,6 +22,8 @@ const DEFAULT_ROLE = SEEKER
 # Files' const, allow to easily change them instead of searching and changing each issue/entry
 const SEEKER_OBJ = "res://PlayerSeeker.tscn"
 const HIDER_OBJ = "res://PlayerHider.tscn"
+const COLLECTABLELIGHT_OBJ = "res://CollectableLight.tscn"
+const COLLECTABLESPEED_OBJ = "res://CollectableSpeed.tscn"
 const MAP_OBJ = "res://World.tscn"
 
 # Name for my player.
@@ -127,8 +129,25 @@ remote func pre_start_game(spawn_points):
 	get_tree().get_root().get_node("Lobby").hide()
 
 	var player_scene = load(SEEKER_OBJ) if player_role == SEEKER else load(HIDER_OBJ) #ternary is like in python : [value_condition_true] if [condition] else [value_condition_false]
-
+	
 	for p_id in spawn_points:
+		var count_collectable_child = world.get_node("CollectablePoints/").get_child_count()
+		for i in range(0, count_collectable_child):
+			var collectable
+			var bool_collectable = false
+			if randi() % 2:
+				bool_collectable = true
+			var collectable_scene = load(COLLECTABLELIGHT_OBJ) if bool_collectable == true else load(COLLECTABLESPEED_OBJ)
+			var collectable_spawn = false
+			if randi() % 2:
+				collectable_spawn = true
+			if(collectable_spawn):
+				var collectable_pos = world.get_node("CollectablePoints/" + str(i)).position
+				collectable = (load(COLLECTABLELIGHT_OBJ) if bool_collectable == true else load(COLLECTABLESPEED_OBJ)).instance()
+				collectable.set_name("Collectable"+str(i)) # Use unique ID as node name.
+				collectable.position=collectable_pos
+				collectable.set_network_master(p_id) #set unique id as master.
+				world.get_node("Collectables").add_child(collectable)
 		var spawn_pos = world.get_node("SpawnPoints/" + str(spawn_points[p_id])).position
 		var player
 		if p_id == get_tree().get_network_unique_id():
