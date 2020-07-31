@@ -179,8 +179,11 @@ func set_timer():
 	timer_game.set_one_shot(true)
 	timer_game.set_wait_time(delay_timer_game)
 	timer_game.connect("timeout", self, "on_timeout_game_complete")
+	var timerbar = load("res://TimeBar.tscn").instance()
+	timerbar.give_timer(timer_game)
 	if get_tree().get_root().has_node("Root"): # Game is in progress.
-		add_child(timer_game) 
+		add_child(timer_game)
+		get_tree().get_root().add_child(timerbar)
 	timer_game.start()
 
 
